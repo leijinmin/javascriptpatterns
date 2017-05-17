@@ -97,9 +97,13 @@ $(document).ready(function() {
 			// New calculation, empty the number array
 			if(obj.numbers.length === 1) obj.numbers.pop(); 
 
-			history.push(currentInput);
-			display.text(history.join(""));
-			displayUp.text(currentInput);
+			if(!obj.isOperator(history[history.length-1])) {
+			// Prevent multiple operators
+				history.push(currentInput);
+				display.text(history.join(""));
+				displayUp.text(currentInput);
+			}
+			
 		},
 		handleCalculation = function(currentInput) {
 			var result, resultInt;
