@@ -1,77 +1,92 @@
 $(document).ready(function() {
-	class Operations {
-		constructor(operator) {
-			this.calculateBy = function(operator) {
-				switch(operator) {
-					case '+' : return function(n1,n2) {return n1 + n2}; break;
-					case '−' : return function(n1,n2) {return n1 - n2}; break;
-					case '×' : return function(n1,n2) {return n1 * n2}; break;
-					case '÷' : return function(n1,n2) {return n1 / n2}; break;
-				}
-			};
+var operations = function() {
+		this.operators = {};	
+	};
+	operations.prototype.add = {
+		calculate: function(n1,n2) {
+			return n1 + n2;
 		}
-	}	
+	};		
+	operations.prototype.minus = {
+		calculate: function(n1,n2) {
+			return n1 - n2;
+		}
+	};	
+	operations.prototype.multiply = {
+		calculate: function(n1,n2) {
+			return n1 * n2;
+		}
+	};	
+	operations.prototype.divide = {
+		calculate: function(n1,n2) {
+			return n1 / n2;
+		}
+	};	
+	var reg = /[\+−×÷]/, // Regular expression object 
+	 	composite = function() {
+		this.numbers = [];
+		this.operators = [];
+		this.operatorScore = {'+' : 0, '−' : 0,'×' : 1, '÷' : 1};
+	};
 
-	class Calculator{
-		constructor(){
-			this.reg = /[\+−×÷]/; // Regular expression object 
-			this.numbers = [];
-			this.operators = [];
-			this.operatorScore = {'+' : 0, '−' : 0,'×' : 1, '÷' : 1};
-			this.operations = new Operations();			
-		}
-		push(element) {
-			this.reg.test(element) ? this.operators.push(element) : this.numbers.push(element);
-		}
-		get(property) {
+
+
+	composite.prototype = {
+		push: function(element) {
+			reg.test(element) ? this.operators.push(element) : this.numbers.push(element);
+		},
+		get: function(property) {
 			if(this.hasOwnProperty(property) && this[property].length>0)
 				return this[property].shift();
-		}
-		isRightGreater(left,right) {
+		},
+		isRightGreater: function(left,right) {
 			return this.operatorScore[right] - this.operatorScore[left] > 0;
-		}
-		pushAfterOperation(n1,n2,operator) {
-			this.numbers.unshift(n1);
-			this.numbers.unshift(n2);	
-			this.operators.unshift(operator);			
-		}
-		handleTwoOperations() {
+		},
+		compositeCalculation: function() {
 			var number1, number2, number3, operatorLeft, operatorRight;
-			number1 = obj.get("numbers");
-			number2 = obj.get("numbers");
-			number3 = obj.get("numbers");
-			operatorLeft = obj.get("operators");
-			operatorRight = obj.get("operators");
-			if(obj.isRightGreater(operatorLeft,operatorRight)) {
-				this.pushAfterOperation(this.operations.calculateBy(operatorRight)(parseFloat(number2),parseFloat(number3)),
-					number1,operatorLeft);			
-			}
-			else {
-				this.pushAfterOperation(number3,
-					this.operations.calculateBy(operatorLeft)(parseFloat(number1),parseFloat(number2)),
-					operatorRight)
-			}			
-		}
-		calculatorCalculation() {
-			
-			while(this.numbers.length > 1){
-				if(this.numbers.length >= 3)
+			while(this.numbers.length > 0){
+				if(this.numbers.length >= 3 && this.operators.length >= 2)
 				{
-					this.handleTwoOperations();
+					number1 = obj.get("numbers");
+					number2 = obj.get("numbers");
+					number3 = obj.get("numbers");
+					operatorLeft = obj.get("operators");
+					operatorRight = obj.get("operators");
+					if(obj.isRightGreater(operatorLeft,operatorRight)) {				
+						this.numbers.unshift(this.calculate(parseFloat(number2),parseFloat(number3),operatorRight));
+						this.numbers.unshift(number1);	
+						this.operators.unshift(operatorLeft);
+					}
+					else {
+						this.numbers.unshift(number3);	
+						this.numbers.unshift(this.calculate(parseFloat(number1),parseFloat(number2),operatorLeft));									
+						this.operators.unshift(operatorRight);
+					}
 				}
-				else if (this.numbers.length === 2) {					
-					this.push(this.operations.calculateBy(obj.get("operators"))(parseFloat(obj.get("numbers")),parseFloat(obj.get("numbers"))));
-					return this.numbers[this.numbers.length-1];
+				else if (this.numbers.length === 2) {
+					var result = this.calculate(parseFloat(obj.get("numbers")),parseFloat(obj.get("numbers")),obj.get("operators"));
+					this.push(result);
+					return result;
+				}
+				else { 
+					return this.numbers[0];
 				}
 			}
-			return this.numbers[0];
-		}
-		isOperator(element) {
-			return this.reg.test(element);
-		}		
+		},
+		isOperator: function(element) {
+			return reg.test(element);
+		},
+		calculate: function(number1,number2,operator) {
+			switch(operator) {
+				case '+': return number1 + number2; 
+				case '−': return number1 - number2; 
+				case '×': return number1 * number2; 
+				case '÷': return number1 / number2; 
+			}
+		}				
 	}
 
-	var obj = new Calculator(),
+	var obj = new composite(),
 		clickedText,
 		display = $("#display h6"),
 		displayUp = $("#display h3"),
@@ -102,7 +117,6 @@ $(document).ready(function() {
 			displayUp.text(currentInput);
 		},
 		handleCalculation = function(currentInput) {
-			var result, resultInt;
 			if (history.length === 0)
 				return;
 			else if (obj.isOperator(history[history.length-1])) {
@@ -112,9 +126,8 @@ $(document).ready(function() {
 			$.each(history,function(key,value){
 				obj.push(value);
 			});
-			result = obj.calculatorCalculation();
-
-			displayUp.text(/(\d+).(\d{5,})$/.test(result.toString())?result.toFixed(4) : result);
+			
+			displayUp.text(obj.compositeCalculation().toFixed(4));
 			display.text(history.join("") + currentInput + displayUp.text());
 			history = [];
 			history.push(displayUp.text());	
