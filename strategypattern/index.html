@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Composite pattern - Calculator</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<div class="calculator">
+	<div class="container-fluid">
+        <h4 class="uppercase text-center text-uppercase">electronic calculator</h4>
+        <div id="display">
+            <h3 id="input">0</h3>
+            <h6 id="output">0</h6>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">
+                <button class="btn reset">AC</button>
+            </div>
+            <div class="col-xs-3">
+                <button class="btn reset">EC</button>
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">&divide;</button> 
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">&times;</button>
+                
+            </div>                        
+        </div>
+        <div class="row">
+            <div class="col-xs-3">
+                <button class="btn">7</button>
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">8</button>
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">9</button> 
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">&minus;</button>      
+            </div>                        
+        </div>
+        <div class="row">
+            <div class="col-xs-3">
+                <button class="btn">4</button>
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">5</button>
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">6</button> 
+            </div>
+            <div class="col-xs-3">
+                <button class="btn">&plus;</button>      
+            </div>                        
+        </div> 
+        <div class="row" id="spanrow">
+            <div class="col-xs-6">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button class="btn">1</button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button class="btn">2</button>
+                    </div>
+                    <div class="col-xs-12">
+                        <button class="btn">0</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button class="btn">3</button> 
+                    </div>
+                    <div class="col-xs-12">
+                        <button class="btn">.</button>      
+                    </div>
+                </div>
+            </div> 
+            <div class="col-xs-3">
+                <div class="row" id="equal">
+                    <div class="col-xs-12">
+                        <button class="btn">=</button> 
+                    </div>
+                </div>
+            </div>                                   
+        </div>
+        <h6 id="signature">Designed &amp; Coded by Jinmin Lei</h6>  
+    </div>
+    
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="js/calculator.js"></script> 
+</body>
+</html>
