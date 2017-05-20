@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	var Calculator = {			
 		Core: function() {
-			this.operatorSCore = {'+' : 0, '−' : 0,'×' : 1, '÷' : 1};	
+			this.operatorScore = {'+' : 0, '−' : 0,'×' : 1, '÷' : 1};	
 		},
 		Interface: function(upperBox,bottomBox) {
 			this.result	= 0;
@@ -11,11 +11,22 @@ $(document).ready(function() {
 		},
 
 		isOperator: function(input) {
-			return /[\+−×÷]/.test(input);
+			return /^[\+−×÷]$/.test(input);
 		},
 		decorate: function(result) {
 			// Format output
-			return parseFloat(/(\d+).(\d{5,})$/.test(result.toString()) ? result.toFixed(4) : result).toString();
+			var output
+			  , result = result.toString()
+			  , position = result.indexOf('e')
+			  , format = function(input) {
+			  		return parseFloat(/^(\d+).(\d{5,})/.test(input) ? parseFloat(input).toFixed(4).toString() : input).toString();
+			  	};
+			
+			if(position >= 0) {
+				output = result.split('e+');
+				return (format(output[0]) + 'e+' + output[1]);
+			}
+			return format(result);
 		}		
 	};
 
@@ -37,32 +48,32 @@ $(document).ready(function() {
 		calculateAll: function(input) {
 			var operators = []
 			  , numbers = []
-			  , tree;
+			  , operation;
 
 			$.each(input,function(key,value) {
 				Calculator.isOperator(value) ? operators.push(value) : numbers.push(value);
 			});
 
-			tree = {
+			operation = {
 					left: numbers[0],
 					right: numbers[1],
-					root : operators[0]
+					operator : operators[0]
 			};
 
 			for(var i=1, len=operators.length; i<len; i++) {
-				if(this.operatorSCore[operators[i]] > this.operatorSCore[tree.root]) {
-					tree.right = this.calculateElements(tree.right,numbers[i+1]).by(operators[i]);
+				if(this.operatorScore[operators[i]] > this.operatorScore[operation.operator]) {
+					operation.right = this.calculateElements(operation.right,numbers[i+1]).by(operators[i]);
 				}
 				else {
-					tree = {
-						left:  this.calculateElements(tree.left,tree.right).by(tree.root),
+					operation = {
+						left:  this.calculateElements(operation.left,operation.right).by(operation.operator),
 						right: numbers[i+1],
-						root:  operators[i]
+						operator:  operators[i]
 					};					
 				}
 
 			}
-			return Calculator.decorate(this.calculateElements(tree.left,tree.right).by(tree.root));			
+			return Calculator.decorate(this.calculateElements(operation.left,operation.right).by(operation.operator));			
 		}
 
 	};
@@ -106,7 +117,7 @@ $(document).ready(function() {
 				this.result = 0;
 			}
 
-			if(!Calculator.isOperator(history[history.length-1])) {
+			if(!Calculator.isOperator(this.history[this.history.length-1])) {
 			// Prevent multiple operators 
 				this.history.push(currentInput);
 				this.bottomBox.text(this.history.join(""));
@@ -130,8 +141,7 @@ $(document).ready(function() {
 			this.history.push(this.upperBox.text());	
 		},
 
-
-		strategies: function(category) {
+		getStrategiesBy: function(category) {
 			if(category === '=') 			return	'equal'
 			if(/[0-9\.]/.test(category)) 	return	'number';
 			if(/[\+−×÷]/.test(category))	return	'operator';
@@ -147,9 +157,9 @@ $(document).ready(function() {
 	$("button").click(function() {
 
 		clickedText  = $(this).text();
-		interface[interface.strategies(clickedText)](clickedText);
+		interface[interface.getStrategiesBy(clickedText)](clickedText);
 
-		if(interface.history[interface.history.length-1].length > 23) {
+		if(interface.history[interface.history.length-1].length > 23 || displayBottom.text().length>47) {
 			interface.AC();
 		}			
 	});
